@@ -12,7 +12,6 @@ from social_network.forms import RegistrationForm, CommentsForm, UpdateForm
 from social_network.models import Profile, User, Message
 
 
-# Буду передавать номер страницы через переменную GET ...index/?page_number=2
 def index(request):
     p = Paginator(Message.objects.order_by('-date'), 50)
     if request.GET:
@@ -59,7 +58,6 @@ class LoginViewMy(LoginView):
     extra_context = {'title': 'Авторизация'}
     success_url = reverse_lazy('main:index')
 
-#не путать пользователей для страницы и присвоения комментария
 @login_required
 def page_with_message(request, pk):
     user_object = get_user_model().objects.get(pk=pk)
@@ -69,9 +67,9 @@ def page_with_message(request, pk):
         form = CommentsForm(request.POST, request.FILES)
         if form.is_valid():
             f = form.save(commit=False)
-            f.username = request.user                 #Кто написал комент
+            f.username = request.user
             f.page = page_object
-            f.destination = user_object.username      #Чья страница
+            f.destination = user_object.username
             f.save()
     else:
         form = CommentsForm()
@@ -110,8 +108,6 @@ def update_page(request, pk):
                 profile.save()
 
                 return redirect(reverse_lazy('main:profile', kwargs={'pk': pk}))
-                # get_user_model().objects.update(cd['first_name'], cd['last_name'], cd['image'])
-                # Profile.objects.update(cd['status'], cd['date_birth'], cd['about'])
         else:
             stub = get_user_model().objects.get(pk=pk).first_name
             stub2 = get_user_model().objects.get(pk=pk).last_name
